@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-labelledby="title desc">
+  <title id="title">Rotation demo</title>
+  <desc id="desc">ASCII image rotation demonstration for the Windows console engine.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f6fed"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="980" height="520" rx="18" fill="#f7f8fb"/>
+  <text x="44" y="58" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700" fill="#111827">旋转示意图 / Rotation Demo</text>
+  <text x="44" y="92" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#4b5563">Left mouse drag changes yaw and pitch, then the projected ASCII nodes are redrawn into the console buffer.</text>
+
+  <g transform="translate(94 140)" filter="url(#shadow)">
+    <rect x="0" y="0" width="290" height="300" rx="12" fill="#111827"/>
+    <text x="26" y="42" font-family="Consolas, monospace" font-size="16" fill="#e5e7eb">Before / 原始</text>
+    <text x="52" y="84" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.......@@@@@@.......</text>
+    <text x="52" y="105" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">....@@@@@@@@@@@@....</text>
+    <text x="52" y="126" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">..@@@@@######@@@@@..</text>
+    <text x="52" y="147" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.@@@###******###@@@.</text>
+    <text x="52" y="168" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.@@##**++++++**##@@.</text>
+    <text x="52" y="189" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.@@##**++++++**##@@.</text>
+    <text x="52" y="210" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.@@@###******###@@@.</text>
+    <text x="52" y="231" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">..@@@@@######@@@@@..</text>
+    <text x="52" y="252" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">....@@@@@@@@@@@@....</text>
+  </g>
+
+  <path d="M 430 285 C 485 210, 545 210, 600 285" fill="none" stroke="#2f6fed" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <text x="438" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="600" fill="#2f6fed">drag / 拖动</text>
+
+  <g transform="translate(650 125) rotate(-13 145 150)" filter="url(#shadow)">
+    <rect x="0" y="0" width="290" height="300" rx="12" fill="#111827"/>
+    <text x="26" y="42" font-family="Consolas, monospace" font-size="16" fill="#e5e7eb">After / 旋转后</text>
+    <text x="80" y="82" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.....@@@@@....</text>
+    <text x="72" y="103" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">...@@@@@@@@@@..</text>
+    <text x="66" y="124" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">..@@@####@@@@@.</text>
+    <text x="60" y="145" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.@@###*****@@@@</text>
+    <text x="56" y="166" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">@@##**+++++##@@</text>
+    <text x="60" y="187" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">@@@##**+++++##@</text>
+    <text x="68" y="208" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">.@@@@###****@@.</text>
+    <text x="78" y="229" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">..@@@@@###@@..</text>
+    <text x="88" y="250" font-family="Consolas, monospace" font-size="13" fill="#d1d5db">....@@@@@@....</text>
+  </g>
+</svg>

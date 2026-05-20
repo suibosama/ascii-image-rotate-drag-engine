@@ -64,6 +64,27 @@ Arguments:
 | `Space` | 开关慢速自动旋转。 / Toggle slow automatic rotation. |
 | `Q` 或 / or `Esc` | 退出程序。 / Exit. |
 
+## 效果示意 / Visual Demos
+
+### 旋转示意图 / Rotation Demo
+
+![Rotation demo](docs/images/rotation-demo.svg)
+
+鼠标左键拖动会更新旋转角度，字符节点经过投影后写入控制台缓冲区。
+
+Left mouse drag updates the rotation angles. The character nodes are projected
+and then written into the console screen buffer.
+
+### 液化示意图 / Liquify Push Demo
+
+![Liquify push demo](docs/images/liquify-demo.svg)
+
+鼠标右键拖动会在光标附近施加局部推力，字符被推开；松手后通过弹簧和阻尼回到原位。
+
+Right mouse drag applies a local push force near the cursor. Characters move
+away from the cursor, then return to their original positions through spring
+and damping.
+
 ## 架构 / Architecture
 
 ```mermaid
