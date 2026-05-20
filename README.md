@@ -13,7 +13,8 @@ not open a GUI window and does not depend on SDL or other graphics frameworks.
 
 | 文件 / File | 说明 / Purpose |
 | --- | --- |
-| `ascii_rotate_push_console_win.c` | 主程序：Windows 控制台渲染、输入处理、旋转和弹性扰动逻辑。 / Main Windows console renderer, input handler, rotation logic, and elastic deformation engine. |
+| `ascii_rotate_push_console_big.c` | 当前主版本：支持旋转、右键推开幅度参数和大画面 ASCII 渲染。 / Current main version with rotation, configurable right-button push amplitude, and large ASCII rendering. |
+| `ascii_rotate_push_console_win.c` | 早期 Windows 控制台版本。 / Earlier Windows console version. |
 | `pure_ascii_face_finger_160col.txt` | 160 列 ASCII 素材，建议首次运行使用。 / 160-column ASCII material, recommended for the first run. |
 | `pure_ascii_face_finger_220col.txt` | 220 列 ASCII 素材，建议配合较小缩放比例。 / 220-column ASCII material, recommended with a smaller zoom scale. |
 
@@ -24,7 +25,7 @@ not open a GUI window and does not depend on SDL or other graphics frameworks.
 Build with MinGW GCC on Windows:
 
 ```powershell
-gcc ascii_rotate_push_console_win.c -o ascii_rotate_push_console_win.exe -lm
+gcc ascii_rotate_push_console_big.c -o ascii_rotate_push_console_big.exe -lm
 ```
 
 程序使用 `windows.h` 和 Windows Console API，因此目标环境是 Windows Terminal、
@@ -40,8 +41,8 @@ Terminal, `cmd.exe`, or compatible Windows console environments.
 Recommended examples:
 
 ```powershell
-.\ascii_rotate_push_console_win.exe .\pure_ascii_face_finger_160col.txt 35 1.00
-.\ascii_rotate_push_console_win.exe .\pure_ascii_face_finger_220col.txt 35 0.72
+.\ascii_rotate_push_console_big.exe .\pure_ascii_face_finger_160col.txt 35 1.00 2.5
+.\ascii_rotate_push_console_big.exe .\pure_ascii_face_finger_220col.txt 35 0.72 2.5
 ```
 
 参数说明：
@@ -53,6 +54,7 @@ Arguments:
 | `argv[1]` | ASCII 文本素材路径。 / ASCII text material path. | `pure_ascii_face_finger_160col.txt` |
 | `argv[2]` | 每帧延迟，单位毫秒；越小越快。 / Frame delay in milliseconds; lower is faster. | 默认 `35`，限制为 `5..300`。 / Default `35`, clamped to `5..300`. |
 | `argv[3]` | 渲染缩放比例。 / Render zoom scale. | 默认 `1.00`，限制为 `0.25..2.50`。 / Default `1.00`, clamped to `0.25..2.50`. |
+| `argv[4]` | 右键推开幅度；越大液化/扰动效果越明显。 / Right-button push amplitude; higher values create stronger liquify deformation. | 默认 `2.5`，限制为 `0.5..6.0`。 / Default `2.5`, clamped to `0.5..6.0`. |
 
 ## 操作 / Controls
 
@@ -87,24 +89,78 @@ and damping.
 
 ## 架构 / Architecture
 
+### 架构层 / Architecture Layers
+
 ```mermaid
 flowchart TD
-    A["ASCII 素材文件 / ASCII material file (.txt)"] --> B["read_ascii_file()"]
-    B --> C["字符网格 + 节点数组 / Grid + Node arrays"]
-    C --> D["setup_console()"]
-    D --> E["主循环 / Main loop"]
+    subgraph UI["用户交互层 / Input & Interaction"]
+        U1["鼠标左键拖动\nRotate yaw / pitch"]
+        U2["鼠标右键拖动\nPush / liquify"]
+        U3["R 复位"]
+        U4["Space 自动旋转"]
+        U5["Q / Esc 退出"]
+    end
+
+    subgraph Input["输入处理层 / Input Processing"]
+        I1["Windows Console Input API"]
+        I2["事件解析\nKeyboard / Mouse events"]
+        I3["交互状态更新\nrotation / push / toggles"]
+    end
+
+    subgraph Data["场景与数据层 / Scene & Data"]
+        D1["ASCII 文件 -> 字符网格 grid"]
+        D2["节点数据 Node\n dx, dy, vx, vy, sx, sy, depth"]
+        D3["字符密度 -> relief z"]
+    end
+
+    subgraph Core["核心处理层 / Core Processing"]
+        C1["旋转矩阵\nYaw / Pitch / Roll"]
+        C2["投影变换"]
+        C3["右键推力偏移"]
+        C4["物理回弹\nspring + damping"]
+        C5["深度测试 / Z-buffer"]
+    end
+
+    subgraph Render["渲染层 / Rendering"]
+        R1["清屏 + Z-buffer 初始化"]
+        R2["逐点写入 CHAR_INFO"]
+        R3["WriteConsoleOutputA 批量输出"]
+    end
+
+    subgraph Platform["平台层 / Platform"]
+        P1["Windows Console API"]
+        P2["CHAR_INFO 缓冲区"]
+        P3["float Z-buffer"]
+        P4["控制台模式设置"]
+    end
+
+    UI --> Input --> Data --> Core --> Render --> Platform
+```
+
+### 实现逻辑 / Implementation Logic
+
+```mermaid
+flowchart TD
+    A["Init\n解析参数 / 读取 ASCII / 分配节点和缓冲"] --> B["ASCII txt"]
+    B --> C["grid 字符网格"]
+    C --> D["Node 节点数组"]
+    D --> E{"Main loop"}
 
     E --> F["handle_input()"]
-    F --> F1["键盘 / Keyboard: reset, auto-spin, quit"]
-    F --> F2["鼠标 / Mouse: rotate, push force"]
+    F --> F1["左键拖动 -> yaw / pitch"]
+    F --> F2["右键拖动 -> 累积推力 dx / dy"]
+    F --> F3["R / Space / Q / Esc"]
 
     E --> G["apply_right_mouse_force()"]
-    G --> H["update_physics()"]
-    H --> I["project_nodes()"]
+    G --> H["update_physics()\n弹簧 + 阻尼 + 邻域耦合"]
+    H --> I["project_nodes()\nR * P * Y + relief z"]
     I --> J["render_frame()"]
-    J --> K["Z-buffer + CHAR_INFO 屏幕缓冲 / screen buffer"]
-    K --> L["WriteConsoleOutputA()"]
-    L --> E
+    J --> K["逐点深度测试\nif depth > zbuf[x,y]"]
+    K --> L["写入 CHAR_INFO"]
+    L --> M["WriteConsoleOutputA"]
+    M --> N{"退出?"}
+    N -- "No" --> E
+    N -- "Yes" --> O["restore_console() / free memory"]
 ```
 
 运行时会把每个可见 ASCII 字符保存为一个节点。节点包含屏幕空间位移、速度、投影坐标
