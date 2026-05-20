@@ -70,7 +70,7 @@ Arguments:
 
 ### 旋转示意图 / Rotation Demo
 
-![Rotation demo](docs/images/rotation-demo.svg)
+![Rotation effect](docs/images/rotation-effect.png)
 
 鼠标左键拖动会更新旋转角度，字符节点经过投影后写入控制台缓冲区。
 
@@ -79,7 +79,7 @@ and then written into the console screen buffer.
 
 ### 液化示意图 / Liquify Push Demo
 
-![Liquify push demo](docs/images/liquify-demo.svg)
+![Liquify push effect](docs/images/liquify-effect.png)
 
 鼠标右键拖动会在光标附近施加局部推力，字符被推开；松手后通过弹簧和阻尼回到原位。
 
@@ -88,6 +88,11 @@ away from the cursor, then return to their original positions through spring
 and damping.
 
 ## 架构 / Architecture
+
+GitHub README 支持 Mermaid 代码块，下面两张架构图会在仓库首页自动渲染。
+
+GitHub README files support Mermaid code blocks, so the following architecture
+diagrams render automatically on the repository page.
 
 ### 架构层 / Architecture Layers
 
